@@ -12,9 +12,8 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 
-export default function OnboardingView() {
+export default function Onboarding() {
   const [name, onChangeName] = useState("");
-
   const [email, onChangeEmail] = useState("");
 
   return (
@@ -24,7 +23,7 @@ export default function OnboardingView() {
         style={styles.container}
       >
         <View style={[styles.header, styles.headerShadow]}>
-          <Image source={require("../../assets/logo.png")} />
+          <Image source={require("./assets/images/logo.png")} />
         </View>
 
         <View style={styles.bodyContainer}>
