@@ -12,9 +12,18 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 
-export default function Onboarding() {
+export default function OnboardingScreen({ onComplete }) {
   const [name, onChangeName] = useState("");
   const [email, onChangeEmail] = useState("");
+
+  const handleNext = () => {
+    if (!name || !email) {
+      Alert.alert("Error", "Please enter both firstname and email");
+      return;
+    }
+
+    onComplete();
+  };
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
@@ -23,7 +32,10 @@ export default function Onboarding() {
         style={styles.container}
       >
         <View style={[styles.header, styles.headerShadow]}>
-          <Image source={require("./assets/images/logo.png")} />
+          <Image
+            source={require("../assets/images/logo.png")}
+            style={styles.logo}
+          />
         </View>
 
         <View style={styles.bodyContainer}>
@@ -52,7 +64,7 @@ export default function Onboarding() {
         </View>
 
         <View style={styles.footer}>
-          <Pressable onPress={() => {}} style={styles.button}>
+          <Pressable onPress={handleNext} style={styles.button}>
             <Text style={styles.buttonText}>Next</Text>
           </Pressable>
         </View>
@@ -80,6 +92,10 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.4,
     shadowRadius: 6,
     elevation: 5,
+  },
+  logo: {
+    resizeMode: "contain",
+    height: 48,
   },
   bodyContainer: {
     flex: 1,
