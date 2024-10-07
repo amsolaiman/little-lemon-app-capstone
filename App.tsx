@@ -3,7 +3,7 @@ import { StyleSheet, SafeAreaView, Platform, StatusBar } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
+//
 import SplashScreen from "./screens/Splash";
 import OnboardingScreen from "./screens/Onboarding";
 import ProfileScreen from "./screens/Profile";
@@ -31,9 +31,14 @@ export default function App() {
     checkOnboardingStatus();
   }, []);
 
-  const handleCompleteOnboarding = async () => {
+  const handleLogin = async () => {
     await AsyncStorage.setItem("isOnboardingCompleted", "true");
     setIsOnboardingCompleted(true);
+  };
+
+  const handleLogout = async () => {
+    await AsyncStorage.clear();
+    setIsOnboardingCompleted(false);
   };
 
   if (isLoading) {
@@ -45,19 +50,12 @@ export default function App() {
       <NavigationContainer>
         <Stack.Navigator>
           {isOnboardingCompleted ? (
-            <Stack.Screen
-              name="Profile"
-              component={ProfileScreen}
-              options={{ headerShown: false }}
-            />
+            <Stack.Screen name="Profile" options={{ headerShown: false }}>
+              {(props) => <ProfileScreen {...props} onLogout={handleLogout} />}
+            </Stack.Screen>
           ) : (
             <Stack.Screen name="Onboarding" options={{ headerShown: false }}>
-              {(props) => (
-                <OnboardingScreen
-                  {...props}
-                  onComplete={handleCompleteOnboarding}
-                />
-              )}
+              {(props) => <OnboardingScreen {...props} onLogin={handleLogin} />}
             </Stack.Screen>
           )}
         </Stack.Navigator>

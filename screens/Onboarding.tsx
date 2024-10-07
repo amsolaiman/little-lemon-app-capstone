@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import {
   Text,
   View,
-  Image,
+  Alert,
   Keyboard,
   Platform,
   Pressable,
@@ -11,18 +11,41 @@ import {
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
 } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+//
+import validateEmail from "../utils/validateEmail";
+//
+import DefaultHeader from "../components/DefaultHeader";
 
-export default function OnboardingScreen({ onComplete }) {
+type Props = {
+  onLogin: VoidFunction;
+};
+
+export default function OnboardingScreen({ onLogin }: Props) {
   const [name, onChangeName] = useState("");
   const [email, onChangeEmail] = useState("");
 
-  const handleNext = () => {
+  const handleNext = async () => {
+    const isEmailValid = validateEmail(email);
+
     if (!name || !email) {
       Alert.alert("Error", "Please enter both firstname and email");
       return;
     }
 
-    onComplete();
+    if (!isEmailValid) {
+      Alert.alert("Error", "Invalid email address");
+      return;
+    }
+
+    const data = {
+      fullName: name,
+      firstName: name,
+      email: email,
+    };
+
+    await AsyncStorage.setItem("user", JSON.stringify(data));
+    onLogin();
   };
 
   return (
@@ -31,12 +54,7 @@ export default function OnboardingScreen({ onComplete }) {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.container}
       >
-        <View style={[styles.header, styles.headerShadow]}>
-          <Image
-            source={require("../assets/images/logo.png")}
-            style={styles.logo}
-          />
-        </View>
+        <DefaultHeader />
 
         <View style={styles.bodyContainer}>
           <Text style={styles.caption}>Let us get to know you...</Text>
@@ -57,6 +75,7 @@ export default function OnboardingScreen({ onComplete }) {
                 style={styles.inputBox}
                 value={email}
                 onChangeText={onChangeEmail}
+                textContentType="emailAddress"
                 keyboardType="email-address"
               />
             </View>
@@ -95,7 +114,7 @@ const styles = StyleSheet.create({
   },
   logo: {
     resizeMode: "contain",
-    height: 48,
+    height: 42,
   },
   bodyContainer: {
     flex: 1,
