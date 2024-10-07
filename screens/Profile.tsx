@@ -2,13 +2,13 @@ import React, { useEffect, useState } from "react";
 import {
   Text,
   View,
+  Alert,
   Platform,
   Pressable,
   TextInput,
   ScrollView,
   StyleSheet,
   KeyboardAvoidingView,
-  Alert,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 //
@@ -121,6 +121,7 @@ export default function OnboardingScreen({ onLogout }: Props) {
     };
 
     await AsyncStorage.setItem("user", JSON.stringify(data));
+    checkUserData();
     Alert.alert("Success", "Changes have been saved");
   };
 
@@ -141,7 +142,11 @@ export default function OnboardingScreen({ onLogout }: Props) {
           </Pressable>
         }
         rightActions={
-          <Avatar src={avatar} alt={user?.fullName ?? firstName} size={42} />
+          <Avatar
+            src={user?.avatar}
+            alt={user?.fullName ?? firstName}
+            size={42}
+          />
         }
       />
 
