@@ -25,10 +25,11 @@ import DefaultHeader from "../components/DefaultHeader";
 import { IUserData } from "../types/userData";
 
 type Props = {
+  navigation: any;
   onLogout: VoidFunction;
 };
 
-export default function OnboardingScreen({ onLogout }: Props) {
+export default function OnboardingScreen({ navigation, onLogout }: Props) {
   const [user, setUser] = useState<IUserData>();
 
   const [firstName, onChangeFirstName] = useState<string | null>(null);
@@ -123,11 +124,13 @@ export default function OnboardingScreen({ onLogout }: Props) {
     await AsyncStorage.setItem("user", JSON.stringify(data));
     checkUserData();
     Alert.alert("Success", "Changes have been saved");
+    navigation.replace("Profile");
   };
 
   const handleDiscard = () => {
     checkUserData();
     Alert.alert("Success", "Changes have been discarded");
+    navigation.replace("Profile");
   };
 
   return (
@@ -137,7 +140,10 @@ export default function OnboardingScreen({ onLogout }: Props) {
     >
       <DefaultHeader
         leftActions={
-          <Pressable style={styles.backButton}>
+          <Pressable
+            onPress={() => navigation.goBack()}
+            style={styles.backButton}
+          >
             <Ionicons name="arrow-back-outline" size={24} color="#FFF" />
           </Pressable>
         }

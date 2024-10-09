@@ -6,42 +6,56 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 //
 import SplashScreen from "./screens/Splash";
 import OnboardingScreen from "./screens/Onboarding";
+import HomeScreen from "./screens/Home";
 import ProfileScreen from "./screens/Profile";
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
-  const [isLoading, setIsLoading] = useState(true);
-  const [isOnboardingCompleted, setIsOnboardingCompleted] = useState(false);
+  const [state, setState] = useState({
+    isOnboardingCompleted: false,
+    isLoading: true,
+  });
+
+  const checkOnboardingStatus = async () => {
+    try {
+      const value = await AsyncStorage.getItem("loginStatus");
+      if (value !== null) {
+        setState((prev) => ({
+          ...prev,
+          isOnboardingCompleted: value === "true",
+          isLoading: false,
+        }));
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setState((prev) => ({
+        ...prev,
+        isLoading: false,
+      }));
+    }
+  };
 
   useEffect(() => {
-    const checkOnboardingStatus = async () => {
-      try {
-        const value = await AsyncStorage.getItem("isOnboardingCompleted");
-        if (value !== null) {
-          setIsOnboardingCompleted(value === "true");
-        }
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     checkOnboardingStatus();
   }, []);
 
   const handleLogin = async () => {
-    await AsyncStorage.setItem("isOnboardingCompleted", "true");
-    setIsOnboardingCompleted(true);
+    await AsyncStorage.setItem("loginStatus", "true");
+    checkOnboardingStatus();
   };
 
   const handleLogout = async () => {
     await AsyncStorage.clear();
-    setIsOnboardingCompleted(false);
+    setState({
+      isOnboardingCompleted: false,
+      isLoading: true,
+    });
+    checkOnboardingStatus();
   };
 
-  if (isLoading) {
+  if (state.isLoading) {
     return <SplashScreen />;
   }
 
@@ -49,10 +63,20 @@ export default function App() {
     <SafeAreaView style={styles.container}>
       <NavigationContainer>
         <Stack.Navigator>
-          {isOnboardingCompleted ? (
-            <Stack.Screen name="Profile" options={{ headerShown: false }}>
-              {(props) => <ProfileScreen {...props} onLogout={handleLogout} />}
-            </Stack.Screen>
+          {state.isOnboardingCompleted ? (
+            <>
+              <Stack.Screen
+                name="Home"
+                component={HomeScreen}
+                options={{ headerShown: false }}
+              />
+
+              <Stack.Screen name="Profile" options={{ headerShown: false }}>
+                {(props) => (
+                  <ProfileScreen {...props} onLogout={handleLogout} />
+                )}
+              </Stack.Screen>
+            </>
           ) : (
             <Stack.Screen name="Onboarding" options={{ headerShown: false }}>
               {(props) => <OnboardingScreen {...props} onLogin={handleLogin} />}
