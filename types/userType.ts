@@ -1,4 +1,4 @@
-export interface IUserData {
+export interface IUserType {
   avatar: string | null;
   fullName: string;
   firstName: string;

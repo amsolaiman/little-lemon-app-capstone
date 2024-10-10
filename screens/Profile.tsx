@@ -22,7 +22,7 @@ import Avatar from "../components/Avatar";
 import Button from "../components/Button";
 import DefaultHeader from "../components/DefaultHeader";
 //
-import { IUserData } from "../types/userData";
+import { IUserType } from "../types/userType";
 
 type Props = {
   navigation: any;
@@ -30,7 +30,7 @@ type Props = {
 };
 
 export default function OnboardingScreen({ navigation, onLogout }: Props) {
-  const [user, setUser] = useState<IUserData>();
+  const [user, setUser] = useState<IUserType>();
 
   const [firstName, onChangeFirstName] = useState<string | null>(null);
   const [lastName, onChangeLastName] = useState<string | null>(null);
@@ -49,7 +49,7 @@ export default function OnboardingScreen({ navigation, onLogout }: Props) {
     try {
       const value = await AsyncStorage.getItem("user");
       if (value) {
-        const data: IUserData = JSON.parse(value);
+        const data: IUserType = JSON.parse(value);
 
         setUser(data);
         onChangeFirstName(data.firstName);

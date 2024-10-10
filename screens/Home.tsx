@@ -1,36 +1,51 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Text,
   View,
+  Alert,
   Image,
   FlatList,
-  StyleSheet,
-  ActivityIndicator,
   Pressable,
-  ScrollView,
   TextInput,
+  ScrollView,
+  StyleSheet,
 } from "react-native";
+import debounce from "lodash.debounce";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 //
+import * as SQLite from "expo-sqlite";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+//
+import useUpdateEffect from "../utils/useUpdateEffect";
 //
 import Avatar from "../components/Avatar";
 import ToggleButton from "../components/ToggleButton";
 import DefaultHeader from "../components/DefaultHeader";
 //
-import { IUserData } from "../types/userData";
+import { IUserType } from "../types/userType";
+import {
+  createTable,
+  getMenuItems,
+  insertMenuItems,
+  filterByQueryAndCategories,
+} from "../database";
+
+const API_URL =
+  "https://raw.githubusercontent.com/Meta-Mobile-Developer-PC/Working-With-Data-API/main/capstone.json";
 
 const TOGGLE_OPTIONS = ["starters", "mains", "desserts", "drinks"];
 
+const db = SQLite.openDatabaseAsync("little_lemon");
+
 export default function HomeScreen({ navigation }) {
-  const [user, setUser] = useState<IUserData>();
+  const [user, setUser] = useState<IUserType>();
 
   useEffect(() => {
     const checkUserData = async () => {
       try {
         const value = await AsyncStorage.getItem("user");
         if (value) {
-          const data: IUserData = JSON.parse(value);
+          const data: IUserType = JSON.parse(value);
 
           setUser(data);
         }
@@ -42,30 +57,41 @@ export default function HomeScreen({ navigation }) {
     checkUserData();
   }, []);
 
-  const [isLoading, setLoading] = useState(true);
-
   const [data, setData] = useState([]);
 
   const [search, onChangeSearch] = useState("");
 
-  const [filter, setFilter] = useState([]);
+  const [query, setQuery] = useState("");
+
+  const [filters, setFilters] = useState([]);
 
   const getMenu = async () => {
     try {
-      const response = await fetch(
-        "https://raw.githubusercontent.com/Meta-Mobile-Developer-PC/Working-With-Data-API/main/capstone.json"
-      );
-      const json = await response.json();
+      await createTable();
 
-      json.menu.forEach((item) => {
-        item.image = `https://github.com/Meta-Mobile-Developer-PC/Working-With-Data-API/blob/main/images/${item.image}?raw=true`;
-      });
+      let menuItems = await getMenuItems();
 
-      setData(json.menu);
+      if (!menuItems.length) {
+        const response = await fetch(API_URL);
+        const json = await response.json();
+
+        menuItems = json.menu.map((item, index) => {
+          return {
+            id: index + 1,
+            name: item.name,
+            description: item.description,
+            price: item.price.toString(),
+            image: `https://github.com/Meta-Mobile-Developer-PC/Working-With-Data-API/blob/main/images/${item.image}?raw=true`,
+            category: item.category,
+          };
+        });
+
+        await insertMenuItems(menuItems);
+      }
+
+      setData(menuItems);
     } catch (error) {
       console.error(error);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -73,13 +99,37 @@ export default function HomeScreen({ navigation }) {
     getMenu();
   }, []);
 
-  const handleToggle = (value: string) => {
-    if (filter.includes(value)) {
-      const newData = filter.filter((item) => item !== value);
+  useUpdateEffect(() => {
+    (async () => {
+      try {
+        const menuItems = await filterByQueryAndCategories(query, filters);
 
-      setFilter(newData);
+        setData(menuItems);
+      } catch (error) {
+        Alert.alert(error.message);
+        console.log(error.message);
+      }
+    })();
+  }, [filters, query]);
+
+  const lookup = useCallback((q) => {
+    setQuery(q);
+  }, []);
+
+  const debouncedLookup = useMemo(() => debounce(lookup, 500), [lookup]);
+
+  const handleSearchChange = (text) => {
+    onChangeSearch(text);
+    debouncedLookup(text);
+  };
+
+  const handleFiltersChange = (value: string) => {
+    if (filters.includes(value)) {
+      const newData = filters.filter((item) => item !== value);
+
+      setFilters(newData);
     } else {
-      setFilter((prev) => [...prev, value]);
+      setFilters((prev) => [...prev, value]);
     }
   };
 
@@ -114,15 +164,21 @@ export default function HomeScreen({ navigation }) {
           {TOGGLE_OPTIONS.map((option) => (
             <ToggleButton
               key={option}
-              isActive={filter.includes(option)}
+              isActive={filters.includes(option)}
               label={option}
-              onClick={() => handleToggle(option)}
+              onClick={() => handleFiltersChange(option)}
             />
           ))}
         </ScrollView>
       </View>
     );
   };
+
+  const NoDataComponent = () => (
+    <View style={styles.errorContainer}>
+      <Text style={styles.errorText}>No data available</Text>
+    </View>
+  );
 
   const renderItem = ({ item }) => (
     <Item
@@ -162,24 +218,21 @@ export default function HomeScreen({ navigation }) {
           <FontAwesome5 name="search" size={24} color="#000" />
           <TextInput
             value={search}
-            onChangeText={onChangeSearch}
+            onChangeText={(event) => handleSearchChange(event)}
             style={styles.inputBox}
           />
         </View>
       </View>
 
-      {isLoading ? (
-        <ActivityIndicator />
-      ) : (
-        <FlatList
-          data={data}
-          keyExtractor={({ name }, index) => name + index}
-          renderItem={renderItem}
-          ListHeaderComponent={ListHeader}
-          ItemSeparatorComponent={ItemSeparator}
-          style={styles.listContainer}
-        />
-      )}
+      <FlatList
+        data={data}
+        keyExtractor={({ name }, index) => name + index}
+        renderItem={renderItem}
+        ListHeaderComponent={ListHeader}
+        ItemSeparatorComponent={ItemSeparator}
+        ListEmptyComponent={NoDataComponent}
+        style={styles.listContainer}
+      />
     </View>
   );
 }
@@ -290,5 +343,14 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: "#CCC",
     width: "100%",
+  },
+  errorContainer: {
+    paddingVertical: 18,
+  },
+  errorText: {
+    color: "#495E57",
+    textAlign: "center",
+    fontSize: 18,
+    fontWeight: "500",
   },
 });
