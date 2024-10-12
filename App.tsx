@@ -1,8 +1,8 @@
 import React, {
-  useEffect,
-  useReducer,
   useMemo,
   useState,
+  useEffect,
+  useReducer,
   useCallback,
 } from "react";
 import {
@@ -15,6 +15,9 @@ import {
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+//
+import { useFonts } from "expo-font";
+import * as DefaultSplash from "expo-splash-screen";
 //
 import { AuthContext } from "./auth/AuthContext";
 //
@@ -31,6 +34,8 @@ const initialState = {
   isLoading: true,
   isOnboardingCompleted: false,
 };
+
+DefaultSplash.preventAutoHideAsync();
 
 export default function App() {
   const [state, dispatch] = useReducer((prevState, action) => {
@@ -86,7 +91,7 @@ export default function App() {
           const value = JSON.stringify(data);
 
           await AsyncStorage.setItem("user", value);
-          checkOnboardingStatus()
+          checkOnboardingStatus();
         } catch (error) {
           console.error(error);
         } finally {
@@ -98,7 +103,7 @@ export default function App() {
           const value = JSON.stringify(data);
 
           await AsyncStorage.setItem("user", value);
-          checkOnboardingStatus()
+          checkOnboardingStatus();
         } catch (error) {
           console.error(error);
         } finally {
@@ -118,6 +123,29 @@ export default function App() {
     }),
     [user]
   );
+
+  const [loaded, error] = useFonts({
+    "Karla-Regular": require("./assets/fonts/Karla-Regular.ttf"),
+    "Karla-Medium": require("./assets/fonts/Karla-Medium.ttf"),
+    "Karla-Bold": require("./assets/fonts/Karla-Bold.ttf"),
+    "Karla-ExtraBold": require("./assets/fonts/Karla-ExtraBold.ttf"),
+    "MarkaziText-Regular": require("./assets/fonts/MarkaziText-Regular.ttf"),
+    "MarkaziText-Medium": require("./assets/fonts/MarkaziText-Medium.ttf"),
+  });
+
+  useEffect(() => {
+    if (error) throw error;
+  }, [error]);
+
+  useEffect(() => {
+    if (loaded) {
+      DefaultSplash.hideAsync();
+    }
+  }, [loaded]);
+
+  if (!loaded) {
+    return null;
+  }
 
   if (state.isLoading) {
     return <SplashScreen />;

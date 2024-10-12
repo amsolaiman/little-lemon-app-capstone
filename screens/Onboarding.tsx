@@ -115,8 +115,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   caption: {
-    fontSize: 22,
-    fontWeight: "500",
+    fontSize: 32,
+    fontFamily: "MarkaziText-Regular",
   },
   formContainer: {
     marginTop: 84,
@@ -126,13 +126,15 @@ const styles = StyleSheet.create({
     marginBottom: 6,
     textAlign: "center",
     fontSize: 16,
+    fontFamily: "Karla-Medium",
   },
   inputBox: {
     height: 40,
     width: 280,
     padding: 10,
     textAlign: "center",
-    fontSize: 16,
+    fontSize: 18,
+    fontFamily: "Karla-Regular",
     borderWidth: 1,
     borderRadius: 8,
     borderColor: "#EDEFEE",
@@ -154,5 +156,6 @@ const styles = StyleSheet.create({
     color: "#FFF",
     textAlign: "center",
     fontSize: 16,
+    fontFamily: "Karla-Bold",
   },
 });

@@ -23,7 +23,8 @@ const styles = StyleSheet.create({
   },
   title: {
     marginBottom: 32,
-    fontSize: 20,
+    fontSize: 28,
+    fontFamily: "MarkaziText-Regular",
   },
   logo: {
     resizeMode: "contain",

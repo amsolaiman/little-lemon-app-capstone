@@ -232,13 +232,15 @@ const styles = StyleSheet.create({
   },
   heroTitle: {
     color: "#F4CE14",
-    fontSize: 36,
-    fontWeight: "700",
+    fontSize: 52,
+    lineHeight: 52 * 1,
+    fontFamily: "MarkaziText-Medium",
   },
   heroSubtitle: {
     color: "#EDEFEE",
-    fontSize: 28,
-    fontWeight: "500",
+    fontSize: 36,
+    lineHeight: 36 * 1,
+    fontFamily: "MarkaziText-Regular",
   },
   heroContent: {
     marginBottom: 32,
@@ -251,6 +253,7 @@ const styles = StyleSheet.create({
     flex: 1,
     color: "#EDEFEE",
     fontSize: 16,
+    fontFamily: "Karla-Medium",
   },
   contentImage: {
     width: 120,
@@ -270,7 +273,8 @@ const styles = StyleSheet.create({
   inputBox: {
     flex: 1,
     marginLeft: 8,
-    fontSize: 16,
+    fontSize: 18,
+    fontFamily: "Karla-Regular",
   },
   //
   listContainer: {
@@ -284,7 +288,7 @@ const styles = StyleSheet.create({
   headerText: {
     marginBottom: 12,
     fontSize: 20,
-    fontWeight: "700",
+    fontFamily: "Karla-ExtraBold",
     textTransform: "uppercase",
   },
   headerScroll: {
@@ -305,16 +309,17 @@ const styles = StyleSheet.create({
   itemTextName: {
     color: "#333333",
     fontSize: 18,
-    fontWeight: "700",
+    fontFamily: "Karla-Bold",
   },
   itemTextDescription: {
     color: "#495E57",
     fontSize: 16,
+    fontFamily: "Karla-Regular",
   },
   itemTextPrice: {
     color: "#495E57",
     fontSize: 18,
-    fontWeight: "500",
+    fontFamily: "Karla-Medium",
   },
   itemImage: {
     width: 84,

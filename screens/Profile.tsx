@@ -165,7 +165,7 @@ export default function OnboardingScreen({ navigation }) {
           </View>
 
           <View>
-            <Text style={styles.inputLabel}>Firstname *</Text>
+            <Text style={styles.inputLabel}>First name *</Text>
             <TextInput
               style={styles.inputBox}
               value={firstName}
@@ -174,7 +174,7 @@ export default function OnboardingScreen({ navigation }) {
           </View>
 
           <View>
-            <Text style={styles.inputLabel}>Lastname *</Text>
+            <Text style={styles.inputLabel}>Last name *</Text>
             <TextInput
               style={styles.inputBox}
               value={lastName}
@@ -281,7 +281,7 @@ const styles = StyleSheet.create({
   },
   caption: {
     fontSize: 18,
-    fontWeight: "700",
+    fontFamily: "Karla-ExtraBold",
   },
   formContainer: {
     marginTop: 6,
@@ -290,11 +290,13 @@ const styles = StyleSheet.create({
   inputLabel: {
     marginBottom: 6,
     fontSize: 14,
+    fontFamily: "Karla-Medium",
   },
   inputBox: {
     paddingVertical: 2,
     paddingHorizontal: 8,
-    fontSize: 16,
+    fontSize: 18,
+    fontFamily: "Karla-Regular",
     borderWidth: 1,
     borderRadius: 8,
     borderColor: "#EDEFEE",
@@ -316,6 +318,7 @@ const styles = StyleSheet.create({
   checkboxText: {
     marginLeft: 10,
     fontSize: 14,
+    fontFamily: "Karla-Medium",
   },
   actions: {
     padding: 32,
@@ -334,6 +337,6 @@ const styles = StyleSheet.create({
     color: "#333333",
     textAlign: "center",
     fontSize: 16,
-    fontWeight: "700",
+    fontFamily: "Karla-ExtraBold",
   },
 });

@@ -47,5 +47,6 @@ const styles = StyleSheet.create({
   label: {
     textAlign: "center",
     fontSize: 16,
+    fontFamily: "Karla-Bold",
   },
 });
