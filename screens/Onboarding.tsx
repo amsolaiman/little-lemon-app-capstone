@@ -11,17 +11,16 @@ import {
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
 } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 //
 import validateEmail from "../utils/validateEmail";
 //
+import { useAuthContext } from "../auth/useAuthContext";
+//
 import DefaultHeader from "../components/DefaultHeader";
 
-type Props = {
-  onLogin: VoidFunction;
-};
+export default function OnboardingScreen() {
+  const { onboard } = useAuthContext();
 
-export default function OnboardingScreen({ onLogin }: Props) {
   const [name, onChangeName] = useState("");
   const [email, onChangeEmail] = useState("");
 
@@ -38,14 +37,7 @@ export default function OnboardingScreen({ onLogin }: Props) {
       return;
     }
 
-    const data = {
-      fullName: name,
-      firstName: name,
-      email: email,
-    };
-
-    await AsyncStorage.setItem("user", JSON.stringify(data));
-    onLogin();
+    onboard(name, email);
   };
 
   return (

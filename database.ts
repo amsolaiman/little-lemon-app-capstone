@@ -48,13 +48,11 @@ export async function filterByQueryAndCategories(
   categories: string[]
 ): Promise<IMenuType[]> {
   let sql = "SELECT * FROM menu";
+
   const params = [];
 
   if (categories.length > 0) {
-    sql +=
-      " WHERE category IN (" +
-      categories.map((_, index) => `?`).join(", ") +
-      ")";
+    sql += " WHERE category IN (" + categories.map((_) => `?`).join(", ") + ")";
 
     params.push(...categories);
   }
@@ -62,7 +60,7 @@ export async function filterByQueryAndCategories(
   if (query) {
     sql += categories.length > 0 ? " AND" : " WHERE";
     sql += " name LIKE ?";
-    
+
     params.push(`%${query}%`);
   }
 

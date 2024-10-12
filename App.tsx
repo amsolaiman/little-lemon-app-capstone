@@ -1,8 +1,24 @@
-import React, { useState, useEffect } from "react";
-import { StyleSheet, SafeAreaView, Platform, StatusBar } from "react-native";
+import React, {
+  useEffect,
+  useReducer,
+  useMemo,
+  useState,
+  useCallback,
+} from "react";
+import {
+  Alert,
+  Platform,
+  StatusBar,
+  StyleSheet,
+  SafeAreaView,
+} from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+//
+import { AuthContext } from "./auth/AuthContext";
+//
+import { IUserType } from "./types/userType";
 //
 import SplashScreen from "./screens/Splash";
 import OnboardingScreen from "./screens/Onboarding";
@@ -11,49 +27,97 @@ import ProfileScreen from "./screens/Profile";
 
 const Stack = createNativeStackNavigator();
 
-export default function App() {
-  const [state, setState] = useState({
-    isOnboardingCompleted: false,
-    isLoading: true,
-  });
+const initialState = {
+  isLoading: true,
+  isOnboardingCompleted: false,
+};
 
-  const checkOnboardingStatus = async () => {
+export default function App() {
+  const [state, dispatch] = useReducer((prevState, action) => {
+    if (action.type === "onboard") {
+      return {
+        ...prevState,
+        isLoading: false,
+        isOnboardingCompleted: action.isOnboardingCompleted,
+      };
+    }
+  }, initialState);
+
+  const [user, setUser] = useState<IUserType>();
+
+  const checkOnboardingStatus = useCallback(async () => {
+    let user = null;
+
     try {
-      const value = await AsyncStorage.getItem("loginStatus");
+      const value = await AsyncStorage.getItem("user");
+
       if (value !== null) {
-        setState((prev) => ({
-          ...prev,
-          isOnboardingCompleted: value === "true",
-          isLoading: false,
-        }));
+        const data: IUserType = JSON.parse(value);
+
+        user = value;
+        setUser(data);
       }
     } catch (error) {
       console.error(error);
     } finally {
-      setState((prev) => ({
-        ...prev,
-        isLoading: false,
-      }));
+      if (user) {
+        dispatch({ type: "onboard", isOnboardingCompleted: true });
+      } else {
+        dispatch({ type: "onboard", isOnboardingCompleted: false });
+      }
     }
-  };
+  }, []);
 
   useEffect(() => {
     checkOnboardingStatus();
   }, []);
 
-  const handleLogin = async () => {
-    await AsyncStorage.setItem("loginStatus", "true");
-    checkOnboardingStatus();
-  };
+  const authContextValue = useMemo(
+    () => ({
+      user: user,
+      onboard: async (name: string, email: string) => {
+        const data = {
+          fullName: name,
+          firstName: name,
+          email: email,
+        };
 
-  const handleLogout = async () => {
-    await AsyncStorage.clear();
-    setState({
-      isOnboardingCompleted: false,
-      isLoading: true,
-    });
-    checkOnboardingStatus();
-  };
+        try {
+          const value = JSON.stringify(data);
+
+          await AsyncStorage.setItem("user", value);
+          checkOnboardingStatus()
+        } catch (error) {
+          console.error(error);
+        } finally {
+          dispatch({ type: "onboard", isOnboardingCompleted: true });
+        }
+      },
+      update: async (data: IUserType) => {
+        try {
+          const value = JSON.stringify(data);
+
+          await AsyncStorage.setItem("user", value);
+          checkOnboardingStatus()
+        } catch (error) {
+          console.error(error);
+        } finally {
+          Alert.alert("Success", "Successfully saved changes!");
+        }
+      },
+      logout: async () => {
+        try {
+          await AsyncStorage.clear();
+        } catch (error) {
+          console.error(error);
+        } finally {
+          setUser(null);
+          dispatch({ type: "onboard", isOnboardingCompleted: false });
+        }
+      },
+    }),
+    [user]
+  );
 
   if (state.isLoading) {
     return <SplashScreen />;
@@ -61,29 +125,33 @@ export default function App() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <NavigationContainer>
-        <Stack.Navigator>
-          {state.isOnboardingCompleted ? (
-            <>
+      <AuthContext.Provider value={authContextValue}>
+        <NavigationContainer>
+          <Stack.Navigator>
+            {state.isOnboardingCompleted ? (
+              <>
+                <Stack.Screen
+                  name="Home"
+                  component={HomeScreen}
+                  options={{ headerShown: false }}
+                />
+
+                <Stack.Screen
+                  name="Profile"
+                  component={ProfileScreen}
+                  options={{ headerShown: false }}
+                />
+              </>
+            ) : (
               <Stack.Screen
-                name="Home"
-                component={HomeScreen}
+                name="Onboarding"
+                component={OnboardingScreen}
                 options={{ headerShown: false }}
               />
-
-              <Stack.Screen name="Profile" options={{ headerShown: false }}>
-                {(props) => (
-                  <ProfileScreen {...props} onLogout={handleLogout} />
-                )}
-              </Stack.Screen>
-            </>
-          ) : (
-            <Stack.Screen name="Onboarding" options={{ headerShown: false }}>
-              {(props) => <OnboardingScreen {...props} onLogin={handleLogin} />}
-            </Stack.Screen>
-          )}
-        </Stack.Navigator>
-      </NavigationContainer>
+            )}
+          </Stack.Navigator>
+        </NavigationContainer>
+      </AuthContext.Provider>
     </SafeAreaView>
   );
 }

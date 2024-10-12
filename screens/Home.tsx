@@ -11,18 +11,18 @@ import {
   StyleSheet,
 } from "react-native";
 import debounce from "lodash.debounce";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 //
 import * as SQLite from "expo-sqlite";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 //
 import useUpdateEffect from "../utils/useUpdateEffect";
 //
+import { useAuthContext } from "../auth/useAuthContext";
+//
 import Avatar from "../components/Avatar";
 import ToggleButton from "../components/ToggleButton";
 import DefaultHeader from "../components/DefaultHeader";
 //
-import { IUserType } from "../types/userType";
 import {
   createTable,
   getMenuItems,
@@ -38,24 +38,7 @@ const TOGGLE_OPTIONS = ["starters", "mains", "desserts", "drinks"];
 const db = SQLite.openDatabaseAsync("little_lemon");
 
 export default function HomeScreen({ navigation }) {
-  const [user, setUser] = useState<IUserType>();
-
-  useEffect(() => {
-    const checkUserData = async () => {
-      try {
-        const value = await AsyncStorage.getItem("user");
-        if (value) {
-          const data: IUserType = JSON.parse(value);
-
-          setUser(data);
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    checkUserData();
-  }, []);
+  const { user } = useAuthContext();
 
   const [data, setData] = useState([]);
 

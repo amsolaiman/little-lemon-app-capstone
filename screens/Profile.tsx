@@ -10,7 +10,6 @@ import {
   StyleSheet,
   KeyboardAvoidingView,
 } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 //
 import Checkbox from "expo-checkbox";
 import * as ImagePicker from "expo-image-picker";
@@ -18,19 +17,14 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 //
 import validateEmail from "../utils/validateEmail";
 //
+import { useAuthContext } from "../auth/useAuthContext";
+//
 import Avatar from "../components/Avatar";
 import Button from "../components/Button";
 import DefaultHeader from "../components/DefaultHeader";
-//
-import { IUserType } from "../types/userType";
 
-type Props = {
-  navigation: any;
-  onLogout: VoidFunction;
-};
-
-export default function OnboardingScreen({ navigation, onLogout }: Props) {
-  const [user, setUser] = useState<IUserType>();
+export default function OnboardingScreen({ navigation }) {
+  const { user, update, logout } = useAuthContext();
 
   const [firstName, onChangeFirstName] = useState<string | null>(null);
   const [lastName, onChangeLastName] = useState<string | null>(null);
@@ -45,27 +39,16 @@ export default function OnboardingScreen({ navigation, onLogout }: Props) {
     newsletter: true,
   });
 
-  const checkUserData = async () => {
-    try {
-      const value = await AsyncStorage.getItem("user");
-      if (value) {
-        const data: IUserType = JSON.parse(value);
-
-        setUser(data);
-        onChangeFirstName(data.firstName);
-        onChangeLastName(data.lastName);
-        onChangeAvatar(data.avatar);
-        onChangeEmail(data.email);
-        onChangePhone(data.phoneNumber);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   useEffect(() => {
-    checkUserData();
-  }, []);
+    if (user) {
+      onChangeFirstName(user?.firstName);
+      onChangeLastName(user?.lastName ?? null);
+      onChangeAvatar(user?.avatar ?? null);
+      onChangeEmail(user?.email);
+      onChangePhone(user?.phoneNumber ?? null);
+      setNotifications(user?.preferences ?? notifications);
+    }
+  }, [user]);
 
   const handlePickImage = async () => {
     const permissionResult =
@@ -119,16 +102,15 @@ export default function OnboardingScreen({ navigation, onLogout }: Props) {
       avatar: avatar,
       email: email,
       phoneNumber: phone,
+      preferences: notifications,
     };
 
-    await AsyncStorage.setItem("user", JSON.stringify(data));
-    checkUserData();
+    update(data);
     Alert.alert("Success", "Changes have been saved");
     navigation.replace("Profile");
   };
 
   const handleDiscard = () => {
-    checkUserData();
     Alert.alert("Success", "Changes have been discarded");
     navigation.replace("Profile");
   };
@@ -161,7 +143,7 @@ export default function OnboardingScreen({ navigation, onLogout }: Props) {
           <Text style={styles.caption}>Personal information</Text>
 
           <View>
-            <Text style={styles.inputLabel}>Avatar</Text>
+            <Text style={styles.inputLabel}>Avatar *</Text>
             <View style={styles.avatarField}>
               <Avatar
                 src={avatar}
@@ -183,7 +165,7 @@ export default function OnboardingScreen({ navigation, onLogout }: Props) {
           </View>
 
           <View>
-            <Text style={styles.inputLabel}>Firstname</Text>
+            <Text style={styles.inputLabel}>Firstname *</Text>
             <TextInput
               style={styles.inputBox}
               value={firstName}
@@ -192,7 +174,7 @@ export default function OnboardingScreen({ navigation, onLogout }: Props) {
           </View>
 
           <View>
-            <Text style={styles.inputLabel}>Lastname</Text>
+            <Text style={styles.inputLabel}>Lastname *</Text>
             <TextInput
               style={styles.inputBox}
               value={lastName}
@@ -201,7 +183,7 @@ export default function OnboardingScreen({ navigation, onLogout }: Props) {
           </View>
 
           <View>
-            <Text style={styles.inputLabel}>Email</Text>
+            <Text style={styles.inputLabel}>Email *</Text>
             <TextInput
               style={styles.inputBox}
               value={email}
@@ -211,7 +193,7 @@ export default function OnboardingScreen({ navigation, onLogout }: Props) {
           </View>
 
           <View>
-            <Text style={styles.inputLabel}>Phone number</Text>
+            <Text style={styles.inputLabel}>Phone number *</Text>
             <TextInput
               style={styles.inputBox}
               value={phone}
@@ -261,7 +243,7 @@ export default function OnboardingScreen({ navigation, onLogout }: Props) {
           </View>
         </View>
 
-        <Pressable onPress={onLogout} style={styles.button}>
+        <Pressable onPress={logout} style={styles.button}>
           <Text style={styles.buttonText}>Log out</Text>
         </Pressable>
 
