@@ -33,10 +33,10 @@ export default function OnboardingScreen({ navigation }) {
   const [phone, onChangePhone] = useState<string | null>(null);
 
   const [notifications, setNotifications] = useState({
-    orderStatus: true,
-    passwordChange: true,
-    specialOffers: true,
-    newsletter: true,
+    orderStatus: false,
+    passwordChange: false,
+    specialOffers: false,
+    newsletter: false,
   });
 
   useEffect(() => {
