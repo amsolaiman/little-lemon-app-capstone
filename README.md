@@ -1,11 +1,14 @@
-# Sample Snack app
+# Little Lemon App
 
-Open the `App.js` file to start writing some code. You can preview the changes directly on your phone or tablet by scanning the **QR code** or use the iOS or Android emulators. When you're done, click **Save** and share the link!
+This is the capstone project for the Meta React Native Specialization program in Coursera. Little Lemon is a restaurant app that was developed using React Native Expo and Typescript, with libraries like SQLite and AsyncStorage.
 
-When you're ready to see everything that Expo provides (or if you want to use your own editor) you can **Download** your project and use it with [expo-cli](https://docs.expo.io/get-started/installation).
+## Preview
 
-All projects created in Snack are publicly available, so you can easily share the link to this project via link, or embed it on a web page with the `<>` button.
+| ![Preview Onboarding Screen](https://github.com/amsolaiman/assets/blob/ab88bd6a260528ad4730d42cf97d9cebd8111563/little-lemon-app/screenshot_1.jpg?raw=true) | ![Preview Home Screen](https://github.com/amsolaiman/assets/blob/ab88bd6a260528ad4730d42cf97d9cebd8111563/little-lemon-app/screenshot_2.jpg?raw=true) | ![Preview Profile Screen](https://github.com/amsolaiman/assets/blob/ab88bd6a260528ad4730d42cf97d9cebd8111563/little-lemon-app/screenshot_3.jpg?raw=true) |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
 
-If you're having problems, you can tweet to us [@expo](https://twitter.com/expo) or ask in our [forums](https://forums.expo.io/c/snack).
+## Certification
 
-Snack is Open Source. You can find the code on the [GitHub repo](https://github.com/expo/snack).
+Visit the Meta React Native Specialization program in [Coursera](https://www.coursera.org/specializations/meta-react-native?).
+
+![Coursera Certificate](https://github.com/amsolaiman/assets/blob/ab88bd6a260528ad4730d42cf97d9cebd8111563/little-lemon-app/certificate.jpg?raw=true)
