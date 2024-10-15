@@ -42,6 +42,12 @@
     },
     "plugins": [
       "expo-font"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "a79e8ead-45c2-42cf-8b2a-57028654dd1a"
+      }
+    },
+    "owner": "amsolaiman"
   }
 }
