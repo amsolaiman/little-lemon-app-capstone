@@ -5,13 +5,7 @@ import React, {
   useReducer,
   useCallback,
 } from "react";
-import {
-  Alert,
-  Platform,
-  StatusBar,
-  StyleSheet,
-  SafeAreaView,
-} from "react-native";
+import { Alert, SafeAreaView, StyleSheet } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -187,6 +181,5 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
 });
