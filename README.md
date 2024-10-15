@@ -1,6 +1,6 @@
 # Little Lemon App
 
-This is the capstone project for the Meta React Native Specialization program in Coursera. Little Lemon is a restaurant app that was developed using React Native Expo and Typescript, with libraries like SQLite and AsyncStorage.
+This is the capstone project for the **Meta React Native Specialization** program in Coursera. It is a restaurant app that was developed using React Native Expo and Typescript, with libraries like SQLite and AsyncStorage.
 
 ## Preview
 
