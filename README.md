@@ -14,6 +14,6 @@ https://expo.dev/accounts/amsolaiman/projects/little-lemon-app/builds/3d91990d-1
 
 ## Certification
 
-Visit the Meta React Native Specialization program in [Coursera](https://www.coursera.org/specializations/meta-react-native?).
+Visit the Meta React Native Specialization program at [Coursera](https://www.coursera.org/specializations/meta-react-native?).
 
 ![Coursera Certificate](https://github.com/amsolaiman/assets/blob/ab88bd6a260528ad4730d42cf97d9cebd8111563/little-lemon-app/certificate.jpg?raw=true)
